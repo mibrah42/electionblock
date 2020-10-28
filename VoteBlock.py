@@ -1,5 +1,7 @@
 import time
 import uuid
+import math
+import binascii
 from helpers import GENESIS_BLOCK_VALUES, MINING_RATE, hash_vote
 
 class VoteBlock:
@@ -22,8 +24,8 @@ class VoteBlock:
         new_hash = None
         current_time = None
         difficulty = prev_block.difficulty
-
-        while new_hash is None or new_hash[:difficulty] != ('0' * difficulty):
+        
+        while new_hash is None or str(bin(int(new_hash, 16)).zfill(16))[3:difficulty + 3] != ('0' * difficulty):
             nonce += 1
             current_time = str(time.time())
             difficulty = VoteBlock.modify_difficulty(prev_block, current_time)
@@ -37,10 +39,11 @@ class VoteBlock:
         if vote_block.difficulty < 1:
             return 1
         time_difference = float(timestamp) - float(vote_block.timestamp)
-        if time_difference > MINE_RATE:
+        if time_difference > MINING_RATE:
             # The last block was mined too slowly, we need to lower the difficulty. 
             return vote_block.difficulty - 1
         return vote_block.difficulty + 1
+
 
 if __name__ == "__main__":
     block = VoteBlock('prev_hash', 'hash', str(time.time()), {

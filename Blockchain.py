@@ -1,7 +1,6 @@
 from collections import deque
 from helpers import hash_vote
 from VoteBlock import VoteBlock
-import binascii
 import uuid
 import time
 import json
@@ -24,7 +23,7 @@ class Blockchain:
             return
         if not Blockchain.isBlockchainValid(blockchain):
             return
-        print("replacing chain")
+        print("Replacing chain...")
         self.blockchain = blockchain
     
     def print(self):
@@ -37,6 +36,12 @@ class Blockchain:
             print("Difficulty:", self.blockchain[i].difficulty)
             print("Nonce:", self.blockchain[i].nonce)
             print("------------------------------------")
+    
+    def getJSON(self):
+        result = []
+        for block in self.blockchain:
+            result.append(block.__dict__)
+        return result
 
     @staticmethod
     def isBlockchainValid(blockchain):
@@ -50,6 +55,9 @@ class Blockchain:
         for i in range(1, len(blockchain)):
             current_block = blockchain[i]
             prev_hash = blockchain[i - 1].hash
+            prev_difficulty = blockchain[i - 1].difficulty
+            if abs(prev_difficulty - current_block.difficulty) > 1:
+                return False    
             # Check if previous hash matches the current block's previous hash.
             if prev_hash != current_block.prev_hash:
                 return False
