@@ -17,14 +17,17 @@ class Blockchain:
         # Add new block to chain.
         self.blockchain.append(new_block)
     
-    def replace_blockchain(blockchain):
+    def replace_blockchain(self, blockchain):
         if len(blockchain) <= len(self.blockchain):
             # New blockchain has a shorter length (invalid).
             return
         if not Blockchain.isBlockchainValid(blockchain):
             return
         print("Replacing chain...")
-        self.blockchain = blockchain
+        vote_blocks = deque()
+        for block in blockchain:
+            vote_blocks.append(VoteBlock(block['prev_hash'], block['hash'], block['timestamp'], block['vote_info'], block['difficulty'], block['nonce']))
+        self.blockchain = vote_blocks
     
     def print(self):
         for i in range(len(self.blockchain)):
@@ -46,25 +49,33 @@ class Blockchain:
     @staticmethod
     def isBlockchainValid(blockchain):
         # Check that the genesis block matches.
-        original_genesis_block = json.dumps(VoteBlock.genesis_block())
-        incoming_genesis_block = json.dumps(blockchain[0])
-        if original_genesis_block != incoming_genesis_block:
-            return False
+        original_genesis_block = VoteBlock.genesis_block().__dict__
+        incoming_genesis_block = blockchain[0]
+
+        # Deep compare block values.
+        for key in original_genesis_block:
+            if key not in incoming_genesis_block:
+                return False
+
+        for key in incoming_genesis_block:
+            if key not in original_genesis_block:
+                return False
         
         # Check that the rest of the blocks are valid.
         for i in range(1, len(blockchain)):
             current_block = blockchain[i]
-            prev_hash = blockchain[i - 1].hash
-            prev_difficulty = blockchain[i - 1].difficulty
-            if abs(prev_difficulty - current_block.difficulty) > 1:
+            prev_hash = blockchain[i - 1]['hash']
+            prev_difficulty = blockchain[i - 1]['difficulty']
+            if abs(prev_difficulty - current_block['difficulty']) > 1:
                 return False    
             # Check if previous hash matches the current block's previous hash.
-            if prev_hash != current_block.prev_hash:
+            if prev_hash != current_block['prev_hash']:
                 return False
             # Recalculate hash given block values.
-            recalculated_hash = hash_vote(prev_hash, current_block.timestamp, current_block.vote_info, prev_block.difficulty, prev_block.nonce)
+            recalculated_hash = hash_vote(prev_hash, current_block['timestamp'], current_block['vote_info'], current_block['difficulty'], current_block['nonce'])
             # Check if recalculated hash matches the current block's hash.
-            if recalculated_hash != current_block.hash:
+            if recalculated_hash != current_block['hash']:
+                print("hashes don't match", recalculated_hash, current_block['hash'])
                 return False 
             return True
         

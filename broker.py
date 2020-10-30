@@ -4,7 +4,7 @@ from time import sleep
 import json
 from Blockchain import Blockchain
 import random
-
+import redis
 
 TOPICS = {
     'PUBLISH_CHAIN': 'PUBLISH_CHAIN'
@@ -12,33 +12,33 @@ TOPICS = {
 
 class BlockchainBroker:
     def __init__(self, blockchain):
-        self.brokerBlockchain = blockchain 
-        port = random.randint(3000, 6000)
-        # Publisher setup
-        context = zmq.Context()
-        publisher_socket = context.socket(zmq.PUB)
-        publisher_socket.bind('tcp://127.0.0.1:' + str(port))
-        self.publisher = publisher_socket
+        self.brokerBlockchain = blockchain
 
-        # Subscriber setup
-        subscriber_socket = context.socket(zmq.SUB)
-        subscriber_socket.connect('tcp://127.0.0.1:' + str(port))
-        subscriber_socket.setsockopt_string(zmq.SUBSCRIBE, TOPICS['PUBLISH_CHAIN'])
-        self.subscriber = subscriber_socket
+        redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis_client
+
+        subscriber = redis_client.pubsub()
+        subscriber.subscribe(TOPICS['PUBLISH_CHAIN'])
+        self.subscriber = subscriber
+
         thread = threading.Thread(target=self.subsribe_callback)
         thread.start()
 
-
     def subsribe_callback(self):
-        while (True):
-            message = self.subscriber.recv_string()
-            chain = json.loads(message[len(TOPICS['PUBLISH_CHAIN']) + 1:])
-            print(chain)
+        for message in self.subscriber.listen():
+            if type(message['data']) == bytes:
+                self.brokerBlockchain.replace_blockchain(json.loads(message['data'].decode('utf-8')))
 
     def publish(self, topic, message):
-        self.publisher.send_string(topic + " " + message)
+        self.redis_client.publish(topic, message)
     
     def publish_chain(self):
         self.publish(TOPICS['PUBLISH_CHAIN'], json.dumps(self.brokerBlockchain.getJSON()))
 
 
+if __name__ == "__main__":
+    blockchain = Blockchain()
+    broker = BlockchainBroker(blockchain)
+    while(True):
+        broker.redis_client.publish(TOPICS['PUBLISH_CHAIN'], "HELLO WORLD")
+        sleep(1)

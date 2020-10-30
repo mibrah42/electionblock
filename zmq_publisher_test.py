@@ -9,7 +9,7 @@ from time import sleep
 
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
-socket.bind('tcp://127.0.0.1:5001')
+socket.bind('tcp://127.0.0.1:2000')
 
 messages = [100, 200, 300]
 curMsg = 0
