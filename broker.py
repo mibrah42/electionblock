@@ -10,6 +10,7 @@ TOPICS = {
     'PUBLISH_CHAIN': 'PUBLISH_CHAIN'
 }
 
+
 class BlockchainBroker:
     def __init__(self, blockchain):
         self.brokerBlockchain = blockchain
@@ -27,13 +28,15 @@ class BlockchainBroker:
     def subsribe_callback(self):
         for message in self.subscriber.listen():
             if type(message['data']) == bytes:
-                self.brokerBlockchain.replace_blockchain(json.loads(message['data'].decode('utf-8')))
+                self.brokerBlockchain.replace_blockchain(
+                    json.loads(message['data'].decode('utf-8')))
 
     def publish(self, topic, message):
         self.redis_client.publish(topic, message)
-    
+
     def publish_chain(self):
-        self.publish(TOPICS['PUBLISH_CHAIN'], json.dumps(self.brokerBlockchain.getJSON()))
+        self.publish(TOPICS['PUBLISH_CHAIN'], json.dumps(
+            self.brokerBlockchain.getJSON()))
 
 
 if __name__ == "__main__":

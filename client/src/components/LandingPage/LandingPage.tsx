@@ -1,6 +1,6 @@
 import { Button, createStyles, FormControl, Grid, InputLabel, makeStyles, Select, Theme, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
-import landingImage from '../../assets/landingImage.png';
+import landingImage from '../../assets/landingImage1.png';
 import {Link} from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
