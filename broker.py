@@ -36,7 +36,7 @@ class BlockchainBroker:
 
     def publish_chain(self):
         self.publish(TOPICS['PUBLISH_CHAIN'], json.dumps(
-            self.brokerBlockchain.getJSON()))
+            self.brokerBlockchain.get_json()))
 
 
 if __name__ == "__main__":

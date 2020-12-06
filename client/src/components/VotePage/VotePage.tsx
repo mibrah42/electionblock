@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 import fingerprintGif from "../../assets/fingerprint.gif";
 import { RouteComponentProps } from "react-router-dom";
-import socketIOClient from "socket.io-client";
+import { campaigns } from "../../data/campaigns";
 
 const useStyles = makeStyles({
   voteCard: {
@@ -49,28 +49,28 @@ const ENDPOINT = "http://127.0.0.1:6001";
 export function VotePage({
   match,
 }: RouteComponentProps<{ campaign_id: string }>) {
-  const [candidate, setCandidate] = useState("1");
-  const [voter, setVoter] = useState<string | null>(null);
+  const [candidate, setCandidate] = useState("");
+  // const [voter, setVoter] = useState<string | null>(null);
   const classes = useStyles();
   const campaign = useMemo(() => match.params.campaign_id, []);
-  const [title, setTitle] = useState("Scan fingerprint to vote");
-  const [disabled, setDisabled] = useState(false);
+  // const [title, setTitle] = useState("Scan fingerprint to vote");
+  // const [disabled, setDisabled] = useState(false);
 
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("fingerprint", (response: Response) => {
-      handleResponse(response);
-    });
-  }, []);
+  // useEffect(() => {
+  //   const socket = socketIOClient(ENDPOINT);
+  //   socket.on("fingerprint", (response: Response) => {
+  //     handleResponse(response);
+  //   });
+  // }, []);
 
-  function handleResponse({ type, message, payload }: Response) {
-    if (type === "FINGERPRINT_FOUND") {
-      setVoter(payload);
-      setDisabled(true);
-    }
+  // function handleResponse({ type, message, payload }: Response) {
+  //   if (type === "FINGERPRINT_FOUND") {
+  //     setVoter(payload);
+  //     setDisabled(true);
+  //   }
 
-    setTitle(message);
-  }
+  //   setTitle(message);
+  // }
 
   const handleChange = (event: {
     target: { value: React.SetStateAction<string> };
@@ -90,7 +90,7 @@ export function VotePage({
       },
       body: JSON.stringify({
         data: {
-          voter_id: voter,
+          voter_id: "1",
           campaign_id: parseInt(campaign),
           candidate_id: parseInt(candidate),
           timestamp: Date.now(),
@@ -99,6 +99,8 @@ export function VotePage({
     });
 
     const messageData = await response.json();
+
+    console.log({ messageData });
 
     // the API frequently returns 201
     if (response.status !== 200 && response.status !== 201) {
@@ -115,7 +117,7 @@ export function VotePage({
           component="h2"
           style={{ fontWeight: "bold", margin: "0 auto" }}
         >
-          {title}
+          Scan finger to vote
         </Typography>
         <Grid>
           <Grid className={classes.voteCard}>
@@ -129,65 +131,26 @@ export function VotePage({
                   onChange={handleChange}
                   className={classes.radioGroup}
                 >
-                  <FormControlLabel
-                    control={
-                      <Radio
-                        disableRipple
-                        classes={{
-                          root: classes.radio,
-                          checked: classes.checked,
-                        }}
+                  {campaigns[parseInt(campaign) - 1].candidates.map(
+                    (name, index) => (
+                      <FormControlLabel
+                        control={
+                          <Radio
+                            disableRipple
+                            classes={{
+                              root: classes.radio,
+                              checked: classes.checked,
+                            }}
+                          />
+                        }
+                        value={(index + 1).toString()}
+                        label={name}
                       />
-                    }
-                    value="1"
-                    label="Donald Trump"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Radio
-                        disableRipple
-                        classes={{
-                          root: classes.radio,
-                          checked: classes.checked,
-                        }}
-                      />
-                    }
-                    className={classes.radio}
-                    value="2"
-                    label="Joe Biden"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Radio
-                        disableRipple
-                        classes={{
-                          root: classes.radio,
-                          checked: classes.checked,
-                        }}
-                      />
-                    }
-                    className={classes.radio}
-                    value="3"
-                    label="Kanye West"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Radio
-                        disableRipple
-                        classes={{
-                          root: classes.radio,
-                          checked: classes.checked,
-                        }}
-                      />
-                    }
-                    className={classes.radio}
-                    value="4"
-                    label="I'll pass this time"
-                  />
+                    )
+                  )}
                 </RadioGroup>
                 <Button
                   variant="contained"
-                  disabled={disabled}
                   color="primary"
                   onClick={addBlock}
                   style={{ width: "100%", backgroundColor: "#B82B3F" }}

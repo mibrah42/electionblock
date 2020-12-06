@@ -4,17 +4,18 @@ from VoteBlock import VoteBlock
 import uuid
 import time
 import json
+from merkle_tree import MerkleTreeBlock
 
 
-class Blockchain:
+class MerkleBlockchain:
     def __init__(self):
-        self.blockchain = deque([VoteBlock.genesis_block()])
+        self.blockchain = deque([MerkleTreeBlock.genesis_block()])
 
-    def add_block(self, vote_info):
+    def add_block(self, votes):
         # Get last block in the chain.
         prev_block = self.blockchain[-1]
         # Create new block.
-        new_block = VoteBlock.create(prev_block, vote_info)
+        new_block = MerkleTreeBlock.create(prev_block, votes)
         # Add new block to chain.
         self.blockchain.append(new_block)
 
@@ -29,7 +30,7 @@ class Blockchain:
         if len(blockchain) <= len(self.blockchain):
             # New blockchain has a shorter length (invalid).
             return
-        if not Blockchain.isBlockchainValid(blockchain):
+        if not MerkleBlockchain.isBlockchainValid(blockchain):
             return
         print("Replacing chain...")
         vote_blocks = deque()
@@ -99,7 +100,7 @@ class Blockchain:
 
 
 if __name__ == '__main__':
-    blockchain = Blockchain()
+    blockchain = MerkleBlockchain()
     blockchain.add_block({
         'voter_id': str(uuid.uuid4()),
         'campaign_id': 2,

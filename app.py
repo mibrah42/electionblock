@@ -7,12 +7,9 @@ import sys
 from time import sleep
 import requests
 import json
-from flask_socketio import SocketIO, emit
-from detect_finger import detect_finger
 
 app = Flask(__name__)
 cors = CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 blockchain = Blockchain()
 broker = BlockchainBroker(blockchain)
@@ -36,8 +33,14 @@ if PORT != DEFAULT_PORT:
 
 @app.route("/api/getvotes")
 @cross_origin()
-def index():
-    return jsonify(blockchain.getJSON())
+def blocks():
+    return jsonify(blockchain.get_json())
+
+
+@app.route("/api/getstats")
+@cross_origin()
+def stats():
+    return jsonify(blockchain.get_stats())
 
 
 vote_buffer = []
@@ -46,20 +49,15 @@ vote_buffer = []
 @app.route('/api/vote', methods=['POST'])
 def vote():
     data = request.json
-    blockchain.add_block(data['data'])
-    broker.publish_chain()
-    return redirect(url_for('index'))
-
-
-@socketio.on('connect')
-def connect(message):
-    data = detect_finger()
-
-    while data['type'] != 'FINGERPRINT_FOUND':
-        data = detect_finger()
-
-    emit('fingerprint', data)
+    print(data)
+    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']):
+        blockchain.add_block(data['data'])
+        broker.publish_chain()
+        return jsonify({'success': True})
+    else:
+        print("Voter already voted")
+        return jsonify({'success': False})
 
 
 if __name__ == "__main__":
-    socketio.run(app, port=PORT)
+    app.run(debug=True, port=PORT)
