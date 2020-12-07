@@ -12,12 +12,8 @@ class MerkleTreeBlock:
         self.prev_hash = prev_hash
         self.timestamp = timestamp
         self.votes = votes
-        hashes = []
-        for vote in votes:
-            hashes.append(self.hash_vote(vote))
-        votes_root_hash = self.get_votes_hash(hashes)
-        self.merkle_root_hash = self.get_root_hash(
-            prev_hash, timestamp, votes_root_hash)
+        self.merkle_root_hash = MerkleTreeBlock.get_root_hash(votes,
+                                                              prev_hash, timestamp)
 
     @staticmethod
     def create(prev_block, votes):
@@ -29,18 +25,27 @@ class MerkleTreeBlock:
         # Initialize genesis block with dummy values.
         return MerkleTreeBlock(GENESIS_BLOCK_VALUES['prev_hash'], GENESIS_BLOCK_VALUES['timestamp'], GENESIS_BLOCK_VALUES['votes'])
 
-    def get_root_hash(self, prev_hash, timestamp, votes_hash):
+    @staticmethod
+    def get_root_hash(votes, prev_hash, timestamp):
+        if len(votes) == 0:
+            return GENESIS_BLOCK_VALUES['hash']
+        hashes = []
+        for vote in votes:
+            hashes.append(MerkleTreeBlock.hash_vote(vote))
+        votes_hash = MerkleTreeBlock.get_votes_hash(hashes)
         combined_hash = timestamp + prev_hash + votes_hash
         return sha256(combined_hash.encode()).hexdigest()
 
-    def hash_vote(self, vote_info):
+    @staticmethod
+    def hash_vote(vote_info):
         sorted_keys = sorted(list(vote_info.keys()))
         sorted_tuples = [(key, vote_info[key]) for key in sorted_keys]
         ordered_dict = OrderedDict(sorted_tuples)
         vote_info_json_string = json.dumps(ordered_dict)
         return sha256(vote_info_json_string.encode()).hexdigest()
 
-    def get_votes_hash(self, hashes):
+    @staticmethod
+    def get_votes_hash(hashes):
         sorted_hashes = sorted(hashes)
         if len(sorted_hashes) % 2 != 0:
             sorted_hashes.append(sorted_hashes[-1:][0])
@@ -55,7 +60,15 @@ class MerkleTreeBlock:
         if len(combined) == 1:
             return combined[0]
         else:
-            return self.get_votes_hash(combined)
+            return MerkleTreeBlock.get_votes_hash(combined)
+
+    def get_dict(self):
+        return {
+            'hash': self.merkle_root_hash,
+            'prev_hash': self.prev_hash,
+            'timestamp': self.timestamp,
+            'votes': self.votes
+        }
 
 
 if __name__ == '__main__':

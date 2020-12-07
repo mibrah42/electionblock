@@ -6,7 +6,6 @@ GENESIS_BLOCK_VALUES = {
     'hash': 'GENESIS_HASH',
     'prev_hash': 'GENESIS_PREV_HASH',
     'timestamp': 00000000,
-    'vote_info': {},
     'votes': []
 }
 

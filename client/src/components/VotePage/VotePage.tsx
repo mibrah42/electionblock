@@ -134,6 +134,7 @@ export function VotePage({
                   {campaigns[parseInt(campaign) - 1].candidates.map(
                     (name, index) => (
                       <FormControlLabel
+                        key={name + index}
                         control={
                           <Radio
                             disableRipple

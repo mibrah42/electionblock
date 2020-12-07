@@ -1,4 +1,5 @@
 import pickle
+import os
 
 
 class BlockchainFileManager:
@@ -6,6 +7,8 @@ class BlockchainFileManager:
         self.filename = filename
 
     def serialize_blockchain(self, blockchain):
+        if not os.path.exists(self.filename):
+            os.makedirs(self.filename[0:self.filename.index('/')])
         with open(self.filename, 'wb') as f:
             pickle.dump(blockchain, f)
 

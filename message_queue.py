@@ -9,6 +9,16 @@ r = redis.Redis()
 queue = Queue(connection=r)
 
 
+@app.route("/api/vote", methods=['GET'])
+def add_vote():
+    if request.args.get("n"):
+        job = queue.enqueue(background_task, request.args.get("n"))
+        q_len = len(queue)
+        return f"Task {job.id} added to queue at {job.enqueued_at}. {q_len} tasks in the queue"
+
+    return "No value for n"
+
+
 @app.route("/task")
 def add_task():
     if request.args.get("n"):

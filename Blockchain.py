@@ -26,17 +26,20 @@ class Blockchain:
         return False
 
     def replace_blockchain(self, blockchain):
+        print("replacing...", blockchain, flush=True)
         if len(blockchain) <= len(self.blockchain):
             # New blockchain has a shorter length (invalid).
-            return
+            return None
         if not Blockchain.isBlockchainValid(blockchain):
-            return
+            print("Blockchain not valid")
+            return None
         print("Replacing chain...")
         vote_blocks = deque()
         for block in blockchain:
             vote_blocks.append(VoteBlock(
                 block['prev_hash'], block['hash'], block['timestamp'], block['vote_info']))
         self.blockchain = vote_blocks
+        return self.blockchain
 
     def print(self):
         for i in range(len(self.blockchain)):
