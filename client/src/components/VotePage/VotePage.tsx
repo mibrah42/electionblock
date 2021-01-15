@@ -9,6 +9,7 @@ import { Button, Container, Grid, Typography } from "@material-ui/core";
 import fingerprintGif from "../../assets/fingerprint.gif";
 import { RouteComponentProps } from "react-router-dom";
 import { campaigns } from "../../data/campaigns";
+import socketIOClient from "socket.io-client";
 
 const useStyles = makeStyles({
   voteCard: {
@@ -44,33 +45,47 @@ interface Response {
   payload: string;
 }
 
-const ENDPOINT = "http://127.0.0.1:6001";
+const ENDPOINT = "http://192.168.2.79:6001/";
 
 export function VotePage({
   match,
 }: RouteComponentProps<{ campaign_id: string }>) {
   const [candidate, setCandidate] = useState("");
-  // const [voter, setVoter] = useState<string | null>(null);
   const classes = useStyles();
+  const [voterId, setVoterId] = useState(null);
+  const [disabled, setDisabled] = useState(true);
+  const [title, setTitle] = useState("Scan finger to vote");
   const campaign = useMemo(() => match.params.campaign_id, []);
-  // const [title, setTitle] = useState("Scan fingerprint to vote");
-  // const [disabled, setDisabled] = useState(false);
 
-  // useEffect(() => {
-  //   const socket = socketIOClient(ENDPOINT);
-  //   socket.on("fingerprint", (response: Response) => {
-  //     handleResponse(response);
-  //   });
-  // }, []);
+  async function fingerprintScan({ type, payload }: any) {
+    if (type === "FINGERPRINT_FOUND") {
+      // Check if voter id exists.
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/hasvoted/${campaign}/${payload}`
+        );
+        const data = await response.json();
+        console.log({ data });
+        if (!data.has_voted) {
+          setVoterId(payload);
+          setDisabled(false);
+          setTitle("Vote for candidate");
+        } else {
+          setTitle("Voter already voted");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
 
-  // function handleResponse({ type, message, payload }: Response) {
-  //   if (type === "FINGERPRINT_FOUND") {
-  //     setVoter(payload);
-  //     setDisabled(true);
-  //   }
-
-  //   setTitle(message);
-  // }
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("fingerprint", fingerprintScan);
+    return () => {
+      socket.off("fingerprint", fingerprintScan);
+    };
+  }, []);
 
   const handleChange = (event: {
     target: { value: React.SetStateAction<string> };
@@ -90,7 +105,7 @@ export function VotePage({
       },
       body: JSON.stringify({
         data: {
-          voter_id: "1",
+          voter_id: voterId,
           campaign_id: parseInt(campaign),
           candidate_id: parseInt(candidate),
           timestamp: Date.now(),
@@ -117,7 +132,7 @@ export function VotePage({
           component="h2"
           style={{ fontWeight: "bold", margin: "0 auto" }}
         >
-          Scan finger to vote
+          {title}
         </Typography>
         <Grid>
           <Grid className={classes.voteCard}>
@@ -153,8 +168,12 @@ export function VotePage({
                 <Button
                   variant="contained"
                   color="primary"
+                  disabled={disabled}
                   onClick={addBlock}
-                  style={{ width: "100%", backgroundColor: "#B82B3F" }}
+                  style={{
+                    width: "100%",
+                    backgroundColor: disabled ? "#8395A7" : "#B82B3F",
+                  }}
                 >
                   Vote
                 </Button>

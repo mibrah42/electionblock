@@ -1,0 +1,9 @@
+pickle5
+uuid
+flask
+flask_cors
+flask_socketio
+requests
+redis
+pyfingerprint
+rq

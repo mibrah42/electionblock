@@ -1,7 +1,7 @@
 import threading
 from time import sleep
 import json
-from Blockchain import Blockchain
+from blockchain import Blockchain
 import random
 import redis
 from serialize_blockchain import BlockchainFileManager

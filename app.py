@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, redirect, url_for
 from flask_cors import CORS, cross_origin
-from merkle_blockchain import MerkleBlockchain
+from blockchain import Blockchain
 from broker import BlockchainBroker
 import threading
 import sys
@@ -31,7 +31,7 @@ if pathlib.Path(BLOCKCHAIN_PATH).exists():
     print("path exists")
     blockchain = file_manager.get_blockchain()
 else:
-    blockchain = MerkleBlockchain()
+    blockchain = Blockchain()
 
 broker = BlockchainBroker(blockchain, file_manager)
 
@@ -63,7 +63,7 @@ def simulate_voting():
 
 if PORT != DEFAULT_PORT:
     initial_setup()
-    simulate_voting()
+    # simulate_voting()
 
 
 @app.route("/api/getvotes")
@@ -81,14 +81,25 @@ def stats():
 vote_buffer = []
 
 
-def in_vote_buffer(vote_info):
+def in_vote_buffer(campaign_id, voter_id):
     for vote in vote_buffer:
-        if vote['voter_id'] == vote_info['voter_id'] and vote['campaign_id'] == vote_info['campaign_id']:
+        if vote['voter_id'] == voter_id and vote['campaign_id'] == campaign_id:
             return True
     return False
 
 
+@app.route('/api/hasvoted/<campaign_id>/<voter_id>')
+@cross_origin()
+def has_voted(campaign_id, voter_id):
+    campaign = int(campaign_id)
+    return jsonify({
+        'has_voted': blockchain.has_voted(
+            voter_id, campaign) or in_vote_buffer(campaign, voter_id)
+    })
+
+
 @app.route('/api/vote', methods=['POST'])
+@cross_origin()
 def vote():
     global vote_buffer
     data = None
@@ -96,9 +107,8 @@ def vote():
         data = request.json
     else:
         data = json.loads(request.json)
-    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']):
+    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['campaign_id']):
         vote_buffer.append(data['data'])
-
         if len(vote_buffer) >= BLOCK_VOTE_SIZE:
             blockchain.add_block(vote_buffer)
             broker.publish_chain()

@@ -45,7 +45,7 @@ def detect_finger():
         # Converts read image to characteristics and stores it in charbuffer 1
         f.convertImage(FINGERPRINT_CHARBUFFER1)
 
-        # Searchs template
+        # Search template
         result = f.searchTemplate()
 
         positionNumber = result[0]

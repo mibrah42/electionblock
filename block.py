@@ -1,29 +1,29 @@
 import hashlib
 from collections import OrderedDict
 from hashlib import sha256
+from helpers import GENESIS_BLOCK_VALUES, hash_vote
 import json
 import time
 import uuid
-from helpers import GENESIS_BLOCK_VALUES, hash_vote
 
 
-class MerkleTreeBlock:
+class Block:
     def __init__(self, prev_hash, timestamp, votes):
         self.prev_hash = prev_hash
         self.timestamp = timestamp
         self.votes = votes
-        self.merkle_root_hash = MerkleTreeBlock.get_root_hash(votes,
-                                                              prev_hash, timestamp)
+        self.merkle_root_hash = Block.get_root_hash(votes,
+                                                    prev_hash, timestamp)
 
     @staticmethod
     def create(prev_block, votes):
         timestamp = str(time.time())
-        return MerkleTreeBlock(prev_block.merkle_root_hash, timestamp, votes)
+        return Block(prev_block.merkle_root_hash, timestamp, votes)
 
     @staticmethod
     def genesis_block():
         # Initialize genesis block with dummy values.
-        return MerkleTreeBlock(GENESIS_BLOCK_VALUES['prev_hash'], GENESIS_BLOCK_VALUES['timestamp'], GENESIS_BLOCK_VALUES['votes'])
+        return Block(GENESIS_BLOCK_VALUES['prev_hash'], GENESIS_BLOCK_VALUES['timestamp'], GENESIS_BLOCK_VALUES['votes'])
 
     @staticmethod
     def get_root_hash(votes, prev_hash, timestamp):
@@ -31,8 +31,8 @@ class MerkleTreeBlock:
             return GENESIS_BLOCK_VALUES['hash']
         hashes = []
         for vote in votes:
-            hashes.append(MerkleTreeBlock.hash_vote(vote))
-        votes_hash = MerkleTreeBlock.get_votes_hash(hashes)
+            hashes.append(Block.hash_vote(vote))
+        votes_hash = Block.get_votes_hash(hashes)
         combined_hash = timestamp + prev_hash + votes_hash
         return sha256(combined_hash.encode()).hexdigest()
 
@@ -60,7 +60,7 @@ class MerkleTreeBlock:
         if len(combined) == 1:
             return combined[0]
         else:
-            return MerkleTreeBlock.get_votes_hash(combined)
+            return Block.get_votes_hash(combined)
 
     def get_dict(self):
         return {
@@ -72,7 +72,7 @@ class MerkleTreeBlock:
 
 
 if __name__ == '__main__':
-    block = MerkleTreeBlock("hash", "123", [
+    block = Block("hash", "123", [
         {
             'voter_id': 1,
             'campaign_id': 1,
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         }
     ])
 
-    print(MerkleTreeBlock.create(block, [
+    print(Block.create(block, [
         {
             'voter_id': 1,
             'campaign_id': 1,
@@ -119,5 +119,3 @@ if __name__ == '__main__':
             'timestamp': 5
         },
     ]).merkle_root_hash)
-
-    # print("root hash", block.merkle_root_hash)
