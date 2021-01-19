@@ -5,7 +5,6 @@ import {
   Theme,
   ThemeProvider,
 } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import { VotePage } from "./components/VotePage";
 import { BlockchainViewer } from "./components/BlockchainViewer";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";

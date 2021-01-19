@@ -58,6 +58,7 @@ class Blockchain:
         for i in range(1, len(self.blockchain)):
             block = self.blockchain[i]
             # Loop over votes inside a block.
+            print(block.get_dict())
             for vote_info in block.votes:
                 campaign_id = vote_info['campaign_id']
                 candidate_id = vote_info['candidate_id']

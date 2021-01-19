@@ -13,13 +13,21 @@ import random
 import pathlib
 from serialize_blockchain import BlockchainFileManager
 from constants import BLOCKCHAIN_DB_FILE_NAME, BLOCK_VOTE_SIZE
+import pika
+import ast
 
 app = Flask(__name__)
 cors = CORS(app)
 
 DEFAULT_PORT = 5000
 PORT = DEFAULT_PORT if len(sys.argv) < 2 else sys.argv[1]
+
 MASTER_API_ADDRESS = "http://localhost:" + str(DEFAULT_PORT)
+
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
+
+channel.queue_declare(queue='vote_queue')
 
 BLOCKCHAIN_PATH = f"NODE_{PORT}/{BLOCKCHAIN_DB_FILE_NAME}"
 
@@ -46,21 +54,6 @@ def initial_setup():
     blockchain.replace_blockchain(data)
 
 
-def simulate_voting():
-    while True:
-        sleep(0.5)
-        vote = {
-            'data': {
-                'voter_id': str(uuid.uuid4()),
-                'campaign_id': 1,
-                'candidate_id': random.randint(1, 4),
-                'timestamp': str(time.time())
-            }
-        }
-        x = requests.post(f"{MASTER_API_ADDRESS}/api/vote",
-                          json=json.dumps(vote))
-
-
 if PORT != DEFAULT_PORT:
     initial_setup()
     # simulate_voting()
@@ -79,6 +72,29 @@ def stats():
 
 
 vote_buffer = []
+
+
+def callback(ch, method, properties, body):
+    global vote_buffer
+    print(body.decode("utf-8"))
+    data = ast.literal_eval(body.decode("utf-8"))
+    print(data)
+    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['campaign_id']):
+        vote_buffer.append(data['data'])
+        if len(vote_buffer) >= BLOCK_VOTE_SIZE:
+            blockchain.add_block(vote_buffer)
+            broker.publish_chain()
+            vote_buffer = []
+        print("VOTE_BUFFER", vote_buffer)
+
+
+channel.basic_consume(
+    queue='vote_queue',
+    auto_ack=True,
+    on_message_callback=callback
+)
+
+threading.Thread(target=channel.start_consuming).start()
 
 
 def in_vote_buffer(campaign_id, voter_id):

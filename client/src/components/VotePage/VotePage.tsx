@@ -46,14 +46,15 @@ interface Response {
 }
 
 const ENDPOINT = "http://192.168.2.79:6001/";
+const VOTE_URL = "http://localhost:6002/api/vote";
 
 export function VotePage({
   match,
 }: RouteComponentProps<{ campaign_id: string }>) {
   const [candidate, setCandidate] = useState("");
   const classes = useStyles();
-  const [voterId, setVoterId] = useState(null);
-  const [disabled, setDisabled] = useState(true);
+  const [voterId, setVoterId] = useState("1");
+  const [disabled, setDisabled] = useState(false);
   const [title, setTitle] = useState("Scan finger to vote");
   const campaign = useMemo(() => match.params.campaign_id, []);
 
@@ -94,8 +95,6 @@ export function VotePage({
   };
 
   async function addBlock() {
-    const VOTE_URL = `http://localhost:5000/api/vote`;
-
     const response = await fetch(VOTE_URL, {
       method: "post",
       headers: {
