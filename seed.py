@@ -4,7 +4,7 @@ import time
 import requests
 import json
 
-endpoint = 'http://localhost:5000/api/vote'
+endpoint = 'http://localhost:6002/api/vote'
 
 
 def make_request(vote):
