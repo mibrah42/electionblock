@@ -47,7 +47,7 @@ export function Appbar() {
         <Toolbar className={classes.toolbar}>
           <Link to="/" className={classes.link}>
             <Typography variant="subtitle1" className={classes.brand}>
-              VoteLink
+              Electionblock
             </Typography>
           </Link>
           <Grid style={{ display: "flex" }}>
