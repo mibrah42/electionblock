@@ -6,25 +6,28 @@ import json
 import time
 import uuid
 
-
+# Used for creating block instances within a shard.
 class Block:
     def __init__(self, prev_hash, timestamp, votes):
         self.prev_hash = prev_hash
         self.timestamp = timestamp
         self.votes = votes
-        self.merkle_root_hash = Block.get_root_hash(votes,
-                                                    prev_hash, timestamp)
+        self.merkle_root_hash = Block.get_root_hash(votes, prev_hash, timestamp)
 
+    # Creates new block.
     @staticmethod
     def create(prev_block, votes):
         timestamp = str(time.time())
         return Block(prev_block.merkle_root_hash, timestamp, votes)
 
+    # Returns genesis block.
     @staticmethod
     def genesis_block():
         # Initialize genesis block with dummy values.
         return Block(GENESIS_BLOCK_VALUES['prev_hash'], GENESIS_BLOCK_VALUES['timestamp'], GENESIS_BLOCK_VALUES['votes'])
 
+    # Generates root hash by hashing individual hashes and calling the method get_votes_hash for recursively
+    # generating a root hash.
     @staticmethod
     def get_root_hash(votes, prev_hash, timestamp):
         if len(votes) == 0:
@@ -36,6 +39,7 @@ class Block:
         combined_hash = timestamp + prev_hash + votes_hash
         return sha256(combined_hash.encode()).hexdigest()
 
+    # Hashes individual vote.
     @staticmethod
     def hash_vote(vote_info):
         sorted_keys = sorted(list(vote_info.keys()))
@@ -44,6 +48,7 @@ class Block:
         vote_info_json_string = json.dumps(ordered_dict)
         return sha256(vote_info_json_string.encode()).hexdigest()
 
+    # Recursively combines hashes together until it generates a single root hash.
     @staticmethod
     def get_votes_hash(hashes):
         sorted_hashes = sorted(hashes)
@@ -62,6 +67,7 @@ class Block:
         else:
             return Block.get_votes_hash(combined)
 
+    # Return a dictionary version of the block.
     def get_dict(self):
         return {
             'hash': self.merkle_root_hash,

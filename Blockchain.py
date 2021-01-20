@@ -4,130 +4,53 @@ import uuid
 import time
 import json
 from block import Block
+import redis
+from file_manager import FileManager
 
-
+# Class used for managing shards.
 class Blockchain:
-    def __init__(self):
-        self.blockchain = deque([Block.genesis_block()])
+    def __init__(self, file_manager):
+        self.file_manager = file_manager
+        # Configure redis client for connecting with the cache.
+        redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis_client = redis_client
+        self.stats = []
 
-    def add_block(self, votes):
-        # Get last block in the chain.
-        prev_block = self.blockchain[-1]
-        # Create new block.
-        new_block = Block.create(prev_block, votes)
-        # Add new block to chain.
-        self.blockchain.append(new_block)
-
-    # DONE: Modify to check array of votes
+    # Checks if a user has voting by loading every shard and checking if the user exists. 
+    # Adds entry to cache to improve performance of future accesses.
     def has_voted(self, voter_id, campaign_id):
-        for i in range(1, len(self.blockchain)):
-            for vote in self.blockchain[i].votes:
-                print("vote", vote)
-                print("INFO", vote['voter_id'], voter_id,
-                      vote['campaign_id'], campaign_id)
-                print("INFO", type(vote['voter_id']), type(voter_id),
-                      type(vote['campaign_id']), type(campaign_id))
-                if vote['voter_id'] == voter_id and vote['campaign_id'] == campaign_id:
-                    return True
+        cache_result = self.redis_client.get(f"{voter_id}_{campaign_id}")
+        if cache_result is not None:
+            return True
+        shard_count = self.file_manager.get_shard_count()
+        for i in range(shard_count):
+            shard = self.file_manager.get_shard(i)
+            if shard.has_voted(voter_id, campaign_id):
+                self.redis_client.set(f"{voter_id}_{campaign_id}", str(True))
+                return True
         return False
 
-    def replace_blockchain(self, blockchain):
-        if len(blockchain) <= len(self.blockchain):
-            # New blockchain has a shorter length (invalid).
-            return None
-        if not Blockchain.isBlockchainValid(blockchain):
-            return None
-        vote_blocks = deque()
-        for block in blockchain:
-            vote_blocks.append(Block(
-                block['prev_hash'], block['timestamp'], block['votes']))
-        self.blockchain = vote_blocks
-        return self
-
-    def print(self):
-        for i in range(len(self.blockchain)):
-            print("Block #" + str(i + 1))
-            print("Hash:", self.blockchain[i].merkle_root_hash)
-            print("Previous Hash:", self.blockchain[i].prev_hash)
-            print("Timestamp:", self.blockchain[i].timestamp)
-            print("Votes:", json.dumps(self.blockchain[i].votes))
-            print("------------------------------------")
-
+    # Returns statistics of entire blockchain by getting the stats for each individual shard.
     def get_stats(self):
+        shard_count = self.file_manager.get_shard_count()
+        if shard_count == 0:
+            return {}
         stats = {}
-        for i in range(1, len(self.blockchain)):
-            block = self.blockchain[i]
-            # Loop over votes inside a block.
-            print(block.get_dict())
-            for vote_info in block.votes:
-                campaign_id = vote_info['campaign_id']
-                candidate_id = vote_info['candidate_id']
-                if campaign_id not in stats:
-                    stats[campaign_id] = {}
-                stats[campaign_id][candidate_id] = stats[campaign_id].get(
-                    candidate_id, 0) + 1
+        for i in range(0, shard_count):
+            shard = self.file_manager.get_shard(i).shard
+            for j in range(len(shard)):
+                block = shard[j]
+                for vote_info in block.votes:
+                    campaign_id = vote_info['campaign_id']
+                    candidate_id = vote_info['candidate_id']
+                    if campaign_id not in stats:
+                        stats[campaign_id] = {}
+                    stats[campaign_id][candidate_id] = stats[campaign_id].get(
+                        candidate_id, 0) + 1
         return stats
 
-    def get_json(self):
-        result = []
-        for block in self.blockchain:
-            result.append(block.get_dict())
-        return result
 
-    @staticmethod
-    def isBlockchainValid(blockchain):
-        # Check that the genesis block matches.
-        original_genesis_block = Block.genesis_block().get_dict()
-        incoming_genesis_block = blockchain[0]
-        # Deep compare block values.
-        for key in original_genesis_block:
-            if key not in incoming_genesis_block:
-                return False
-
-        for key in incoming_genesis_block:
-            if key not in original_genesis_block:
-                return False
-
-        # Check that the rest of the blocks are valid.
-        for i in range(1, len(blockchain)):
-            current_block = blockchain[i]
-            prev_hash = blockchain[i - 1]['hash']
-            # Check if previous hash matches the current block's previous hash.
-            if prev_hash != current_block['prev_hash']:
-                return False
-            # Recalculate hash given block values.
-            recalculated_hash = Block.get_root_hash(
-                current_block['votes'], prev_hash, current_block['timestamp'])
-            # Check if recalculated hash matches the current block's hash.
-            if recalculated_hash != current_block['hash']:
-                return False
-            return True
-
-
-if __name__ == '__main__':
-    blockchain = Blockchain()
-    voter = str(uuid.uuid4())
-    blockchain.add_block([{
-        'voter_id': voter,
-        'campaign_id': 2,
-        'candidate_id': 4,
-        'timestamp': str(time.time())
-    },
-        {
-        'voter_id': str(uuid.uuid4()),
-        'campaign_id': 2,
-        'candidate_id': 4,
-        'timestamp': str(time.time())
-    },
-        {
-        'voter_id': str(uuid.uuid4()),
-        'campaign_id': 1,
-        'candidate_id': 1,
-        'timestamp': str(time.time())
-    }])
-    blockchain.add_block([{
-        'voter_id': str(uuid.uuid4()),
-        'campaign_id': 1,
-        'candidate_id': 3,
-        'timestamp': str(time.time())
-    }])
+if __name__ == "__main__":
+    file_manager = FileManager(5000)
+    blockchain = Blockchain(file_manager)
+    print(blockchain.get_stats())
