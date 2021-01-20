@@ -19,19 +19,27 @@ ElectionBlock is a voting system that provides its own permissioned blockchain, 
 
 ```bash
 .
+├── README.md
 ├── app.py
-├── broker.py
+├── block.py
+├── blockchain.py
+├── blockchainViewer.gif
 ├── client
 ├── constants.py
 ├── detect_finger.py
+├── file_manager.py
+├── fingerprint.gif
 ├── fingerprint_search.py
 ├── fingerprint_sensor.py
 ├── helpers.py
-├── merkle_blockchain.py
-├── merkle_tree.py
+├── landing.png
+├── locustfile.py
 ├── requirements.txt
+├── run.sh
 ├── seed.py
-└── serialize_blockchain.py
+├── shard.py
+├── shard_broker.py
+└── statistics.png
 ```
 
 ### Instructions to run
