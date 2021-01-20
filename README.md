@@ -10,6 +10,10 @@
   Mohamed Ibrahim, Kajan Ravindran, Hyon Lee, Omair Farooqui
 </p>
 
+### Introduction
+
+ElectionBlock is a voting system that provides its own permissioned blockchain, running on a centralized network of nodes, with the integration of a biometric scanner to allow for vote integrity and distinguish between registered and unregistered voters. This design allows for data immutability while providing the user with security and control over their ballot. Experimental results demonstrate the potential for scalability of the system to handle a high volume of votes from multiple servers while maintaining data integrity, performance, and security.
+
 
 ### Folder structure
 
