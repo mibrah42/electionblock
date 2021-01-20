@@ -39,22 +39,16 @@ const useStyles = makeStyles({
   checked: {},
 });
 
-interface Response {
-  type: string;
-  message: string;
-  payload: string;
-}
-
 const ENDPOINT = "http://192.168.2.79:6001/";
-const VOTE_URL = "http://localhost:6002/api/vote";
+const VOTE_URL = "http://localhost:5000/api/vote";
 
 export function VotePage({
   match,
 }: RouteComponentProps<{ campaign_id: string }>) {
   const [candidate, setCandidate] = useState("");
   const classes = useStyles();
-  const [voterId, setVoterId] = useState("1");
-  const [disabled, setDisabled] = useState(false);
+  const [voterId, setVoterId] = useState(null);
+  const [disabled, setDisabled] = useState(true);
   const [title, setTitle] = useState("Scan finger to vote");
   const campaign = useMemo(() => match.params.campaign_id, []);
 
@@ -66,7 +60,6 @@ export function VotePage({
           `http://localhost:5000/api/hasvoted/${campaign}/${payload}`
         );
         const data = await response.json();
-        console.log({ data });
         if (!data.has_voted) {
           setVoterId(payload);
           setDisabled(false);

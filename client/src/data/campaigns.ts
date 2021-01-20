@@ -2,10 +2,10 @@ export const campaigns = [
     {
         title: "US Elections",
         candidates: [
-            "Donald Trump",
             "Joe Biden",
-            "Kanye West",
-            "I'll pass this time"
+            "Donald Trump",
+            "Bernie Sanders",
+            "Abstain from voting",
         ]
     },
     {
@@ -13,7 +13,8 @@ export const campaigns = [
         candidates: [
             "T'Challa",
             "Erik Killmonger",
-            "M'Baku"
+            "M'Baku",
+            "Abstain from voting",
         ]
     }
 ];

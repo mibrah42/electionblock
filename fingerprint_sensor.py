@@ -4,10 +4,10 @@ from flask_cors import CORS, cross_origin
 from detect_finger import detect_finger
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret_key'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
-
+# This server runs on the raspberry pi and communicates directly with the react application
+# by sending the id of the registered user (i.e. index of fingerprint template).
 @socketio.on('connect')
 def on_connect():
     while True:

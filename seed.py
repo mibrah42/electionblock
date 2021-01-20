@@ -4,8 +4,7 @@ import time
 import requests
 import json
 
-endpoint = 'http://localhost:6002/api/vote'
-
+endpoint = 'http://localhost:5000/api/vote'
 
 def make_request(vote):
     try:
@@ -15,10 +14,11 @@ def make_request(vote):
 
 
 if __name__ == "__main__":
-    for i in range(80000000):
+    for i in range(1, 10000):
         if i % 100 == 0:
             print(i)
 
+        time.sleep(0.1)
         make_request({
             'data': {
                 'voter_id': str(uuid.uuid4()),
@@ -28,6 +28,7 @@ if __name__ == "__main__":
             }
         })
 
+        time.sleep(0.1)
         make_request({
             'data': {
                 'voter_id': str(uuid.uuid4()),
@@ -36,3 +37,4 @@ if __name__ == "__main__":
                 'timestamp': str(time.time())
             }
         })
+
