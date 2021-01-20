@@ -104,7 +104,7 @@ ssh pi@<ip address>
 2. Change directory to server location
 
 ```bash
-cd /var/www/votelink_server
+cd /var/www/electionblock_server
 ```
 
 3. Start python virtual environment
