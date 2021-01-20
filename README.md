@@ -6,6 +6,10 @@
 <img src="landing.png" width="800"/>
 </p>
 
+<p align="center">
+  Mohamed Ibrahim, Kajan Ravindran, Hyon Lee, Omair Farooqui
+</p>
+
 
 ### Folder structure
 
