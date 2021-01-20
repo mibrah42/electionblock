@@ -7,8 +7,11 @@
 </p>
 
 <p align="center">
+<img src="blockchainViewer.gif" width="800"/>
+</p>
+
+<p align="center">
 <img src="fingerprint.gif" width="200"/>
-<img src="blockchainViewer.gif" width="200"/>
 <img src="statistics.png" width="200"/>
 </p>
 
