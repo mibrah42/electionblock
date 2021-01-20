@@ -106,11 +106,11 @@ python3 fingerprint_sensor.py
 ### Screenshots
 
 <p align="center">
-<img src="blockchainViewer.gif" width="800"/>
+<img src="fingerprint.gif" width="800"/>
 </p>
 
 <p align="center">
-<img src="fingerprint.gif" width="800"/>
+<img src="blockchainViewer.gif" width="800"/>
 </p>
 
 <p align="center">
