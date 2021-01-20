@@ -110,6 +110,10 @@ python3 fingerprint_sensor.py
 </p>
 
 <p align="center">
-<img src="fingerprint.gif" height="265"/>
-<img src="statistics.png" height="265"/>
+<img src="fingerprint.gif" height="800"/>
 </p>
+
+<p align="center">
+<img src="statistics.png" height="600"/>
+</p>
+
