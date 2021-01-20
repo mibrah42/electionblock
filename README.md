@@ -6,15 +6,6 @@
 <img src="landing.png" width="800"/>
 </p>
 
-<p align="center">
-<img src="blockchainViewer.gif" width="800"/>
-</p>
-
-<p align="center">
-<img src="fingerprint.gif" width="200"/>
-<img src="statistics.png" width="200"/>
-</p>
-
 
 ### Folder structure
 
@@ -111,3 +102,14 @@ cd /var/www/votelink_server
 ```bash
 python3 fingerprint_sensor.py
 ```
+
+### Screenshots
+
+<p align="center">
+<img src="blockchainViewer.gif" width="800"/>
+</p>
+
+<p align="center">
+<img src="fingerprint.gif" height="265"/>
+<img src="statistics.png" height="265"/>
+</p>
