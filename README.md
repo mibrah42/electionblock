@@ -2,6 +2,19 @@
 <h1 align="center">Electionblock</h1>
 </div>
 
+<p align="center">
+<img src="landing.png" width="600"/>
+</p>
+
+<p align="center">
+<img src="fingerprint.gif" width="600"/>
+</p>
+
+<p align="center">
+<img src="statistics.png" width="600"/>
+</p>
+
+
 
 ### Folder structure
 
