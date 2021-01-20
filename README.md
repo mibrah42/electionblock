@@ -2,11 +2,6 @@
 <h1 align="center">Electionblock</h1>
 </div>
 
-<div align="center">
-<kbd>
-<img src="landing.png" width="800px"  />
-</kbd>
-</div>
 
 ### Folder structure
 
