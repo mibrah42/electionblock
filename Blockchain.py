@@ -8,6 +8,8 @@ import redis
 from file_manager import FileManager
 
 # Class used for managing shards.
+
+
 class Blockchain:
     def __init__(self, file_manager):
         self.file_manager = file_manager
@@ -16,7 +18,7 @@ class Blockchain:
         self.redis_client = redis_client
         self.stats = []
 
-    # Checks if a user has voting by loading every shard and checking if the user exists. 
+    # Checks if a user has voting by loading every shard and checking if the user exists.
     # Adds entry to cache to improve performance of future accesses.
     def has_voted(self, voter_id, campaign_id):
         cache_result = self.redis_client.get(f"{voter_id}_{campaign_id}")

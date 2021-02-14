@@ -3,8 +3,9 @@ import uuid
 import time
 import json
 
+
 class WebsiteTestUser(HttpUser):
-	# Tests voting endpoint through simulated users and requests.
+    # Tests voting endpoint through simulated users and requests.
     @task(1)
     def vote(self):
         self.client.post("http://localhost:5000/api/vote", json={"data": {"voter_id": str(
