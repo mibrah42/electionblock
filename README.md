@@ -126,6 +126,10 @@ python3 fingerprint_sensor.py
 </p>
 
 <p align="center">
+<img width="800" alt="Screen Shot 2021-03-21 at 11 36 48 AM" src="https://user-images.githubusercontent.com/26859947/111910932-c05cac80-8a39-11eb-9139-5877f89cd069.png">
+</p>
+
+<p align="center">
 <img src="statistics.png" width="800"/>
 </p>
 
