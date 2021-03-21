@@ -126,10 +126,6 @@ python3 fingerprint_sensor.py
 </p>
 
 <p align="center">
-<img src="blockchainViewer.gif" width="800"/>
-</p>
-
-<p align="center">
 <img src="statistics.png" width="800"/>
 </p>
 
