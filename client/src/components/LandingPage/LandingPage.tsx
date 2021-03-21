@@ -83,7 +83,8 @@ export function LandingPage() {
       <Grid className={classes.innerWrapper}>
         <Grid item className={classes.leftContent}>
           <Typography variant="h4" component="h1" className={classes.title}>
-            Blockchain and IoT Based Voting System
+            An Electronic Voting System using Blockchain and Fingerprint
+            Authentication
           </Typography>
           <Grid item className={classes.actionItems}>
             <FormControl variant="outlined" className={classes.formControl}>
