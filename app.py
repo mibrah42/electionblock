@@ -146,7 +146,7 @@ def vote():
         data = request.json
     else:
         data = json.loads(request.json)
-    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['campaign_id']):
+    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['voter_id']):
         vote_buffer.append(data['data'])
         if len(vote_buffer) >= BLOCK_VOTE_SIZE:
             # Create a new block once the vote_buffer has reached capacity.
