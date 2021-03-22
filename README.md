@@ -122,7 +122,7 @@ python3 fingerprint_sensor.py
 ### Screenshots
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/26859947/111935238-6ee40a00-8a99-11eb-8483-7feffd9bb248.png" width="400"/>
+<img src="https://user-images.githubusercontent.com/26859947/111935238-6ee40a00-8a99-11eb-8483-7feffd9bb248.png" width="800"/>
 </p>
 
 
