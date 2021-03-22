@@ -12,6 +12,7 @@ import { Appbar } from "./components/Appbar";
 import { LandingPage } from "./components/LandingPage";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { Stats } from "./components/Stats";
+import { Toaster } from "react-hot-toast";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,6 +66,7 @@ export default function FullWidthGrid() {
           </Switch>
         </Router>
       </div>
+      <Toaster />
     </ThemeProvider>
   );
 }

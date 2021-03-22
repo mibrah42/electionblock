@@ -155,7 +155,7 @@ export function BlockchainViewer() {
               return (
                 <Paper key={hash} elevation={3} className={classes.paper}>
                   <Typography variant="h5" component="h5">
-                    Block #{index + 1}
+                    Block #{selectedShard * 10 + index + 1}
                   </Typography>
                   <Typography className={classes.text}>
                     <strong className={classes.property}>HASH:</strong> {hash}

@@ -31,6 +31,8 @@ cors = CORS(app)
 
 # Initial setup for peers to join the network.
 # Downloads files from the central server.
+
+
 def initial_setup():
     # Download all shards from the server.
     try:
@@ -78,6 +80,8 @@ else:
 broker = ShardBroker(active_shard, file_manager)
 
 # Endpoint for retrieving number of shards. Used by peer nodes to download initial set of files.
+
+
 @app.route("/api/get_shards_length")
 @cross_origin()
 def shards_length():
@@ -87,6 +91,8 @@ def shards_length():
         return jsonify({"success": False}), 500
 
 # Endpoint for retrieving specific shard from file system.
+
+
 @app.route('/NODE_{PORT}/<path:filename>')
 @cross_origin()
 def serve_static(filename):
@@ -105,6 +111,8 @@ def get_votes(shard):
     return jsonify(shard.get_json()), 200
 
 # Endpoint for retrieving vote statistics (i.e. Votes per candidate, etc...).
+
+
 @app.route("/api/getstats")
 @cross_origin()
 def stats():
@@ -116,6 +124,8 @@ def stats():
 vote_buffer = []
 
 # Check if a voter has already voted for a particular campaign. Used to prevent duplicate votes.
+
+
 def in_vote_buffer(campaign_id, voter_id):
     for vote in vote_buffer:
         if vote['voter_id'] == voter_id and vote['campaign_id'] == campaign_id:
@@ -146,7 +156,7 @@ def vote():
         data = request.json
     else:
         data = json.loads(request.json)
-    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['campaign_id']):
+    if not blockchain.has_voted(data['data']['voter_id'], data['data']['campaign_id']) and not in_vote_buffer(data['data']['campaign_id'], data['data']['voter_id']):
         vote_buffer.append(data['data'])
         if len(vote_buffer) >= BLOCK_VOTE_SIZE:
             # Create a new block once the vote_buffer has reached capacity.

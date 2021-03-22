@@ -10,6 +10,7 @@ import fingerprintGif from "../../assets/fingerprint.gif";
 import { RouteComponentProps } from "react-router-dom";
 import { campaigns } from "../../data/campaigns";
 import socketIOClient from "socket.io-client";
+import toast from "react-hot-toast";
 
 const useStyles = makeStyles({
   voteCard: {
@@ -66,6 +67,7 @@ export function VotePage({
           setTitle("Vote for candidate");
         } else {
           setTitle("Voter already voted");
+          toast.error("Voter already voted");
         }
       } catch (e) {
         console.error(e);
@@ -113,6 +115,8 @@ export function VotePage({
     if (response.status !== 200 && response.status !== 201) {
       console.error(`Invalid response status ${response.status}.`);
       throw messageData;
+    } else {
+      toast.success("Vote added successfully");
     }
   }
 
