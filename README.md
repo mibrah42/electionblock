@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-<img src="landing.png" width="800"/>
+<img width="800" alt="Screen Shot 2021-03-21 at 11 36 48 AM" src="https://user-images.githubusercontent.com/26859947/111934978-e4030f80-8a98-11eb-94ba-719e85032cb5.png">
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
 
 ### Introduction
 
-ElectionBlock is a permissioned blockchain voting system, running on a centralized network of nodes, with the integration of a biometric scanner to allow for vote integrity and distinguish between registered and unregistered voters. This design allows for data immutability while providing the user with security and control over their ballot. Experimental results demonstrate the potential for scalability of the system to handle a high volume of votes from multiple servers while maintaining data integrity, performance, and security.
+ElectionBlock is a permissioned blockchain voting system, running on a centralized network of nodes, with the integration of a biometric scanner to allow for vote integrity and distinguishing between registered and unregistered voters. This design allows for data immutability while providing the user with security and control over their ballot. Experimental results demonstrate the potential for scalability of the system to handle a high volume of votes from multiple servers while maintaining data integrity, performance, and security.
 
 
 ### Folder structure
@@ -125,9 +125,10 @@ python3 fingerprint_sensor.py
 <img src="fingerprint.gif" width="800"/>
 </p>
 
+
 <p align="center">
-<img width="800" alt="Screen Shot 2021-03-21 at 11 36 48 AM" src="https://user-images.githubusercontent.com/26859947/111934978-e4030f80-8a98-11eb-94ba-719e85032cb5.png">
-</p>
+<img width="800" alt="Screen Shot 2021-03-21 at 11 36 48 AM" src="https://user-images.githubusercontent.com/26859947/111935062-0b59dc80-8a99-11eb-8b87-f7332a31a0ba.png">
+  </p>
 
 <p align="center">
 <img src="statistics.png" width="800"/>
